@@ -1,6 +1,4 @@
-import os
 from google.adk.agents import LlmAgent
-from google.genai import types
 from vertexai.preview.reasoning_engines import AdkApp
 from dotenv import load_dotenv
 
@@ -11,7 +9,7 @@ from .cloud_run_model import CloudRunModel
 load_dotenv()
 
 # S'assurer que l'authentification Google est configurée
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", 
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS",
 #     os.path.expanduser("~/.config/gcloud/application_default_credentials.json")
 # )
 
@@ -26,4 +24,3 @@ root_agent = LlmAgent(
 )
 # Créer l'application ADK
 app = AdkApp(agent=root_agent)
-
