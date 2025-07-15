@@ -18,4 +18,5 @@
   
   // Git
   "git.openRepositoryInParentFolders": "always",
+  "python-envs.pythonProjects": [],
 }

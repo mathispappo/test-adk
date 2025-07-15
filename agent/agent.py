@@ -1,28 +1,33 @@
-import os
-from google.adk.agents import LlmAgent
-from vertexai.preview.reasoning_engines import AdkApp
+from google.adk.agents import SequentialAgent
+
+from .subagents.prompt_router_agent import prompt_router_agent
+from .subagents.confluence_agent import confluence_agent
+from .subagents.jira_agent import jira_agent
+from .subagents.llm_servier_agent import llm_servier_agent
+from .subagents.prose_agent import prose_agent
+from .subagents.system_response_regrouper import system_response_regrouper
+
 from dotenv import load_dotenv
-import vertexai
+import os
 
-# Import de votre modèle custom
-from .cloud_run_model import CloudRunModel
-
-# Charger les variables d'environnement
 load_dotenv()
-
-# Configurer le projet Google Cloud (nécessaire pour ADK)
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "prose-plat-sdx-275d")
-vertexai.init(project=PROJECT_ID)
-
-# Créer l'instance du modèle Cloud Run
-cloud_run_model = CloudRunModel()
-
-# Créer l'agent avec votre modèle
-root_agent = LlmAgent(
-    model=cloud_run_model,
-    name="servier_agentic_router",
-    instruction="""You are a specialized assistant trained on specific data.""",
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS"
 )
+os.environ["GOOGLE_CLOUD_PROJECT"] = os.getenv("GOOGLE_CLOUD_PROJECT")
+os.environ["GOOGLE_CLOUD_LOCATION"] = os.getenv("GOOGLE_CLOUD_LOCATION")
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "true")
 
-# Créer l'application ADK avec le projet configuré
-app = AdkApp(agent=root_agent)
+
+# Create the sequential agent with minimal callback
+root_agent = SequentialAgent(
+    name="System_Response_Regrouper_Root_Agent",
+    sub_agents=[
+        prompt_router_agent,
+        confluence_agent,
+        jira_agent,
+        prose_agent,
+        llm_servier_agent,
+        system_response_regrouper,
+    ],
+)
