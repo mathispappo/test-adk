@@ -17,13 +17,6 @@ jira_agent = LlmAgent(
         For development work, migrations, implementations, and new functionality, use "Feature" as the issue type.
         For defects and fixes, use "Bug" as the issue type.
         For user stories and requirements, use "Story" as the issue type.
-
-        If on the prompt you find "JiraAgent", you should return the output in the following JSON format:
-        ```json
-        {
-            "jira_output": "JiraAgentPrompt"
-        }
-        ```
         """,
     output_key="jira_output",
 )

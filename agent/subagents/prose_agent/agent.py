@@ -15,13 +15,6 @@ prose_agent = LlmAgent(
         1. **Enhancing GitLab projects** - Provide a GitLab project URL and analyze/improve the code
         2. **Creating Pull Requests** - Automatically create MRs with enhanced code
         3. **Answering development questions** - General coding and infrastructure help
-        
-        If on the prompt you find "ProseAgent", you should return the output in the following JSON format:
-        ```json
-        {
-            "prose_output": "ProseAgentResponse"
-        }
-        ```
         """,
     output_key="prose_output",
 )

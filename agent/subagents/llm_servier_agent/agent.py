@@ -18,13 +18,6 @@ llm_servier_agent = LlmAgent(
         - Strategic initiatives, methodologies, and knowledge that is not public
         
         You need to answer question uniquely based on the Servier internal knowledge.
-
-        If on the prompt you find "LlmServierAgent", you should return the output in the following JSON format:
-        ```json
-        {
-            "llm_servier_output": "LlmServierAgentResponse"
-        }
-        ```
         """,
     output_key="llm_servier_output",
 )

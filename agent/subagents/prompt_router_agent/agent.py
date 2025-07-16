@@ -16,20 +16,23 @@ prompt_router_agent = LlmAgent(
         - If the request relates to documentation, Confluence, or internal knowledge base → assign to ConfluenceAgent.
         - If it involves tickets, bugs, features, or JIRA → assign to JiraAgent.
         - If it concerns code, GitLab, CLI, infrastructure → assign to ProseAgent.
-        - If it's about Servier internal processes, corporate policy, or strategy → assign to LlmServierAgent.
-
-        Return the result **strictly as a JSON object**, like this:
-
-        ```json
-        {
-            "ConfluenceAgent": "ConfluenceAgentPrompt",
-            "JiraAgent": "JiraAgentPrompt",
-            "ProseAgent": "ProseAgentPrompt",
-            "LlmServierAgent": "LlmServierAgentPrompt"
-        }
-        ```
+        - If it's about Servier internal processes, corporate policy, blueprint, or strategy → assign to LlmServierAgent.
 
         If a agent is not applicable, do not include it in the response.
+
+        Return the result, like this:
+
+        ConfluenceAgent: 
+        ConfluenceAgentPrompt
+
+        JiraAgent: 
+        JiraAgentPrompt
+
+        ProseAgent: 
+        ProseAgentPrompt
+        
+        LlmServierAgent: 
+        LlmServierAgentPrompt
         """,
     output_key="routed_prompt",
 )

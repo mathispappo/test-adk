@@ -37,9 +37,8 @@ manager_agent = LlmAgent(
     - If the request relates to LlmServierAgent → assign to LlmServierAgent.
 
     You just have to replace the XXXAgentPrompt with the actual prompt for each agent.
-    Do not create your own response, juste replace the placeholders with the actual prompts.
+    Juste replace the placeholders with the actual prompts.
 
-    Here is the request:
     {routed_prompt}
     """,
     tools=[
@@ -60,6 +59,3 @@ root_agent = SequentialAgent(
         system_response_regrouper,
     ],  # Ensure system_response_regrouper is included
 )
-
-# commande pour supprimer les fichier pyc
-# !find . -name "*.pyc" -exec rm -f {} \;
