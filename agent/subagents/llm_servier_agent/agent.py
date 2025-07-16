@@ -1,20 +1,6 @@
 from google.adk.agents import LlmAgent
-# import os
-# from dotenv import load_dotenv
-# import vertexai
 
-# Import de votre modèle custom
 from .cloud_run_model import CloudRunModel
-
-# Charger les variables d'environnement
-# load_dotenv()
-
-# # Configurer le projet Google Cloud (nécessaire pour ADK)
-# PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "prose-plat-sdx-275d")
-# vertexai.init(project=PROJECT_ID)
-
-# --- Constants ---
-GEMINI_MODEL = "gemini-2.0-flash"
 
 # Créer l'instance du modèle Cloud Run
 cloud_run_model = CloudRunModel()
@@ -32,7 +18,7 @@ llm_servier_agent = LlmAgent(
         - Servier's corporate practices and guidelines
         - Internal operating procedures and project blueprints
         - Strategic initiatives, methodologies, and knowledge that is not public
-        
+
         You need to answer question uniquely based on the Servier internal knowledge.
         """,
     output_key="llm_servier_output",

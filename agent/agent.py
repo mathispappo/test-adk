@@ -1,21 +1,19 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 from google.adk.agents import LlmAgent, SequentialAgent
 from google.adk.tools import agent_tool
 
-from .subagents.prompt_router_agent import prompt_router_agent
 from .subagents.confluence_agent import confluence_agent
 from .subagents.jira_agent import jira_agent
 from .subagents.llm_servier_agent import llm_servier_agent
+from .subagents.prompt_router_agent import prompt_router_agent
 from .subagents.prose_agent import prose_agent
 from .subagents.system_response_regrouper import system_response_regrouper
 
-
 # Configurer le projet Google Cloud (nécessaire pour ADK)
 load_dotenv()
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
-    "GOOGLE_APPLICATION_CREDENTIALS"
-)
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 os.environ["GOOGLE_CLOUD_PROJECT"] = os.getenv("GOOGLE_CLOUD_PROJECT")
 os.environ["GOOGLE_CLOUD_LOCATION"] = os.getenv("GOOGLE_CLOUD_LOCATION")
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "true")
