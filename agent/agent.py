@@ -1,28 +1,65 @@
-import os
-from google.adk.agents import LlmAgent
-from vertexai.preview.reasoning_engines import AdkApp
 from dotenv import load_dotenv
-import vertexai
+import os
+from google.adk.agents import LlmAgent, SequentialAgent
+from google.adk.tools import agent_tool
 
-# Import de votre modèle custom
-from .cloud_run_model import CloudRunModel
+from .subagents.prompt_router_agent import prompt_router_agent
+from .subagents.confluence_agent import confluence_agent
+from .subagents.jira_agent import jira_agent
+from .subagents.llm_servier_agent import llm_servier_agent
+from .subagents.prose_agent import prose_agent
+from .subagents.system_response_regrouper import system_response_regrouper
 
-# Charger les variables d'environnement
-load_dotenv()
 
 # Configurer le projet Google Cloud (nécessaire pour ADK)
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "prose-plat-sdx-275d")
-vertexai.init(project=PROJECT_ID)
+load_dotenv()
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS"
+)
+os.environ["GOOGLE_CLOUD_PROJECT"] = os.getenv("GOOGLE_CLOUD_PROJECT")
+os.environ["GOOGLE_CLOUD_LOCATION"] = os.getenv("GOOGLE_CLOUD_LOCATION")
+os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "true")
 
-# Créer l'instance du modèle Cloud Run
-cloud_run_model = CloudRunModel()
 
-# Créer l'agent avec votre modèle
-root_agent = LlmAgent(
-    model=cloud_run_model,
-    name="servier_agentic_router",
-    instruction="""You are a specialized assistant trained on specific data.""",
+# --- Constants ---
+GEMINI_MODEL = "gemini-2.0-flash"
+
+# --- Manager Agent ---
+manager_agent = LlmAgent(
+    name="ManagerAgent",
+    model=GEMINI_MODEL,
+    description="Manages the system response regrouper and routes prompts to appropriate sub-agents-tools.",
+    instruction="""
+    You are a Manager Agent. Your task is to manage the system response regrouper and route prompts to the appropriate sub-agents-tools.
+    - If the request relates to ConfluenceAgent → assign to ConfluenceAgent.
+    - If the request relates to JiraAgent → assign to JiraAgent.
+    - If the request relates to ProseAgent → assign to ProseAgent.
+    - If the request relates to LlmServierAgent → assign to LlmServierAgent.
+
+    You just have to replace the XXXAgentPrompt with the actual prompt for each agent.
+    Do not create your own response, juste replace the placeholders with the actual prompts.
+
+    Here is the request:
+    {routed_prompt}
+    """,
+    tools=[
+        agent_tool.AgentTool(agent=confluence_agent),
+        agent_tool.AgentTool(agent=jira_agent),
+        agent_tool.AgentTool(agent=prose_agent),
+        agent_tool.AgentTool(agent=llm_servier_agent),
+    ],
+    output_key="manager_response",
 )
 
-# Créer l'application ADK avec le projet configuré
-app = AdkApp(agent=root_agent)
+# Create the sequential agent with minimal callback
+root_agent = SequentialAgent(
+    name="system_monitor_agent",
+    sub_agents=[
+        prompt_router_agent,
+        manager_agent,
+        system_response_regrouper,
+    ],  # Ensure system_response_regrouper is included
+)
+
+# commande pour supprimer les fichier pyc
+# !find . -name "*.pyc" -exec rm -f {} \;
