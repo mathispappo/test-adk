@@ -1,36 +1,62 @@
+import os
+import sys
+
 from google.adk.agents import LlmAgent
-from google.adk.tools import agent_tool
 
-from .subagents.confluence_agent import confluence_agent
-from .subagents.jira_agent import jira_agent
-from .subagents.llm_servier_agent import llm_servier_agent
-from .subagents.prose_agent import prose_agent
+# Import other agents
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from agent.subagents.confluence_agent.agent import ConfluenceAgent
+from agent.subagents.jira_agent.agent import JiraAgent
+from agent.subagents.llm_servier_agent.agent import LlmServierAgent
+from agent.subagents.prose_agent.agent import ProseAgent
 
-# --- Constants ---
-GEMINI_MODEL = "gemini-2.0-flash"
 
-# Confluence Agent
-confluence_agent = LlmAgent(
-    name="ManagerAgent",
-    model=GEMINI_MODEL,
-    description="Manages the system response regrouper and routes prompts to appropriate sub-agents-tools.",
-    instruction="""
-    You are a Manager Agent. Your task is to manage the system response regrouper and route prompts to the appropriate sub-agents-tools.
-    - If the request relates to ConfluenceAgent → assign to ConfluenceAgent.
-    - If the request relates to JiraAgent → assign to JiraAgent.
-    - If the request relates to ProseAgent → assign to ProseAgent.
-    - If the request relates to LlmServierAgent → assign to LlmServierAgent.
+class ManagerAgent:
+    """Router agent that coordinates all specialist agents."""
 
-    You just have to replace the XXXAgentPrompt with the actual prompt for each agent.
-    Juste replace the placeholders with the actual prompts.
+    def __init__(self):
+        # Initialize all sub-agents
+        self.confluence_agent = ConfluenceAgent()
+        self.jira_agent = JiraAgent()
+        self.llm_servier_agent = LlmServierAgent()
+        self.prose_agent = ProseAgent()
 
-    {routed_prompt}
-    """,
-    tools=[
-        agent_tool.AgentTool(agent=confluence_agent),
-        agent_tool.AgentTool(agent=jira_agent),
-        agent_tool.AgentTool(agent=prose_agent),
-        agent_tool.AgentTool(agent=llm_servier_agent),
-    ],
-    output_key="manager_response",
-)
+        # Create the router agent
+        self.agent = self._create_agent()
+
+    def _create_agent(self) -> LlmAgent:
+        """Create the Router LlmAgent."""
+        # Manager Agent
+        return LlmAgent(
+            name="ManagerAgent",
+            model="gemini-2.0-flash",
+            description="Manages the system response regrouper and routes prompts to appropriate sub-agents-tools.",
+            instruction="""
+            You are a Manager Agent. Your task is to manage the system response regrouper and route prompts to the appropriate sub-agents-tools.
+            For each agent prompt block (e.g. 'ConfluenceAgent: ...', 'ProseAgent: ...'), transfer that block to the corresponding agent using the transfer_to_agent function.
+            If multiple agent blocks are present, transfer each to its respective agent, one after the other, until all blocks have been transferred.
+            Do not answer yourself unless you are the best agent for the prompt.
+            Only transfer the relevant prompt part to the agent.
+            Example:
+            ConfluenceAgent:
+            <prompt for confluence>
+            ProseAgent:
+            <prompt for prose>
+            JiraAgent:
+            <prompt for jira>
+            LlmServierAgent:
+            <prompt for servier>
+            If you receive several blocks, call transfer_to_agent for each block in sequence.
+            """,
+            sub_agents=[
+                self.prose_agent.get_agent(),
+                self.confluence_agent.get_agent(),
+                self.jira_agent.get_agent(),
+                self.llm_servier_agent.get_agent(),
+            ],
+            output_key="manager_response",
+        )
+
+    def get_agent(self) -> LlmAgent:
+        """Return the configured LlmAgent."""
+        return self.agent

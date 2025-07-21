@@ -1,3 +1,3 @@
-"""Manager agent for coordinating sub-agents."""
+from .agent import ManagerAgent
 
-from .agent import manager_agent
+__all__ = ["ManagerAgent"]

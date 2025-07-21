@@ -1,3 +1,3 @@
-"""Prose agent for software development and GitLab integration."""
+from .agent import ProseAgent
 
-from .agent import prose_agent
+__all__ = ["ProseAgent"]
