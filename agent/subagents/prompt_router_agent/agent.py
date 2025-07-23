@@ -60,17 +60,17 @@ class PromptRouterAgent:
 
             Return the result, like this:
 
-            ConfluenceAgent:
-            ConfluenceAgentPrompt
+            **ConfluenceAgent**:
+            <prompt for confluence>
 
-            JiraAgent:
-            JiraAgentPrompt
+            **ProseAgent**:
+            <prompt for prose>
 
-            ProseAgent:
-            ProseAgentPrompt
+            **JiraAgent**:
+            <prompt for jira>
 
-            LlmServierAgent:
-            LlmServierAgentPrompt
+            **LlmServierAgent**:
+            <prompt for servier>
             """,
             output_key="routed_prompt",
         )

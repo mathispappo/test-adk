@@ -37,6 +37,10 @@ class RootAgent:
             ],  # Ensure system_response_regrouper is included
         )
 
+    def get_agent(self) -> SequentialAgent:
+        """Return the configured SequentialAgent."""
+        return self.agent
+
 
 # Expose root_agent pour ADK
 root_agent = RootAgent().agent

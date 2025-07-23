@@ -2,13 +2,14 @@ import os
 import sys
 
 from google.adk.agents import LlmAgent
+from google.adk.tools.agent_tool import AgentTool
 
 # Import other agents
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from agent.subagents.confluence_agent.agent import ConfluenceAgent
-from agent.subagents.jira_agent.agent import JiraAgent
-from agent.subagents.llm_servier_agent.agent import LlmServierAgent
-from agent.subagents.prose_agent.agent import ProseAgent
+from agent.subagents.confluence_agent import ConfluenceAgent
+from agent.subagents.jira_agent import JiraAgent
+from agent.subagents.llm_servier_agent import LlmServierAgent
+from agent.subagents.prose_agent import ProseAgent
 
 
 class ManagerAgent:
@@ -33,26 +34,21 @@ class ManagerAgent:
             description="Manages the system response regrouper and routes prompts to appropriate sub-agents-tools.",
             instruction="""
             You are a Manager Agent. Your task is to manage the system response regrouper and route prompts to the appropriate sub-agents-tools.
-            For each agent prompt block (e.g. 'ConfluenceAgent: ...', 'ProseAgent: ...'), transfer that block to the corresponding agent using the transfer_to_agent function.
-            If multiple agent blocks are present, transfer each to its respective agent, one after the other, until all blocks have been transferred.
-            Do not answer yourself unless you are the best agent for the prompt.
-            Only transfer the relevant prompt part to the agent.
-            Example:
-            ConfluenceAgent:
-            <prompt for confluence>
-            ProseAgent:
-            <prompt for prose>
-            JiraAgent:
-            <prompt for jira>
-            LlmServierAgent:
-            <prompt for servier>
-            If you receive several blocks, call transfer_to_agent for each block in sequence.
+            - If the request relates to ConfluenceAgent → assign to ConfluenceAgent.
+            - If the request relates to JiraAgent → assign to JiraAgent.
+            - If the request relates to ProseAgent → assign to ProseAgent.
+            - If the request relates to LlmServierAgent → assign to LlmServierAgent.
+
+            You just have to replace the XXXAgentPrompt with the actual prompt for each agent.
+            Juste replace the placeholders with the actual prompts.
+
+            {routed_prompt}
             """,
-            sub_agents=[
-                self.prose_agent.get_agent(),
-                self.confluence_agent.get_agent(),
-                self.jira_agent.get_agent(),
-                self.llm_servier_agent.get_agent(),
+            tools=[
+                AgentTool(self.prose_agent.get_agent()),
+                AgentTool(self.confluence_agent.get_agent()),
+                AgentTool(self.jira_agent.get_agent()),
+                AgentTool(self.llm_servier_agent.get_agent()),
             ],
             output_key="manager_response",
         )
