@@ -34,7 +34,7 @@ class RootAgent:
             sub_agents=[
                 self.prompt_router_agent.get_agent(),
                 self.manager_agent.get_agent(),
-            ],  # Ensure system_response_regrouper is included
+            ],
         )
 
 

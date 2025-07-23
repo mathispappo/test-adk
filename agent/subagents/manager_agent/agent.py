@@ -38,13 +38,13 @@ class ManagerAgent:
             Do not answer yourself unless you are the best agent for the prompt.
             Only transfer the relevant prompt part to the agent.
             Example:
-            ConfluenceAgent:
+            **ConfluenceAgent:**
             <prompt for confluence>
-            ProseAgent:
+            **ProseAgent:**
             <prompt for prose>
-            JiraAgent:
+            **JiraAgent:**
             <prompt for jira>
-            LlmServierAgent:
+            **LlmServierAgent:**
             <prompt for servier>
             If you receive several blocks, call transfer_to_agent for each block in sequence.
             """,
