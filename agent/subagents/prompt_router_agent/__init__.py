@@ -1,3 +1,3 @@
-"""System response regrouper agent."""
+from .agent import PromptRouterAgent
 
-from .agent import prompt_router_agent
+__all__ = ["PromptRouterAgent"]

@@ -1,3 +1,3 @@
-"""Jira agent for project management."""
+from .agent import JiraAgent
 
-from .agent import jira_agent
+__all__ = ["JiraAgent"]
