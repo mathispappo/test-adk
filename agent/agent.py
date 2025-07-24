@@ -11,7 +11,6 @@ from agent.subagents.jira_agent import JiraAgent
 from agent.subagents.llm_servier_agent import LlmServierAgent
 from agent.subagents.prompt_router_agent import PromptRouterAgent
 from agent.subagents.prose_agent import ProseAgent
-from agent.subagents.system_response_agent import SystemResponseAgent
 
 # Configurer le projet Google Cloud (nécessaire pour ADK)
 load_dotenv()
@@ -31,7 +30,6 @@ class RootAgent:
         self.jira_agent = JiraAgent()
         self.llm_servier_agent = LlmServierAgent()
         self.prose_agent = ProseAgent()
-        self.system_response_agent = SystemResponseAgent()
 
         # Create the router agent
         self.agent = self._create_agent()
@@ -45,7 +43,6 @@ class RootAgent:
                 self.prose_agent.get_agent(),
                 self.llm_servier_agent.get_agent(),
                 self.jira_agent.get_agent(),
-                # self.system_response_agent.get_agent(),
             ],
         )
 
