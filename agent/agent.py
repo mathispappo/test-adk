@@ -33,6 +33,8 @@ class RootAgent:
 
         # Create the router agent
         self.agent = self._create_agent()
+        # Applique le filtrage des agents selon le prompt router
+        self.check_agent()
 
     def _create_agent(self) -> SequentialAgent:
         return SequentialAgent(
@@ -44,6 +46,32 @@ class RootAgent:
                 self.llm_servier_agent.get_agent(),
                 self.jira_agent.get_agent(),
             ],
+        )
+
+    def check_agent(self):
+        """Check if an agent is in the output_key of the prompt router.
+        For exemple, if the prompt router returns:
+        **ConfluenceAgent:**
+        ConfluenceAgentPrompt
+        **JiraAgent:**
+        JiraAgentPrompt.
+
+        The SequentialAgent must use uniquely ConfluenceAgent and JiraAgent.
+        """  # noqa: D205
+        # Supposons que le PromptRouterAgent a une méthode get_output_keys() qui retourne les clés
+        output_keys = self.prompt_router_agent.get_output_keys()
+        agent_map = {
+            "ConfluenceAgent": self.confluence_agent.get_agent(),
+            "JiraAgent": self.jira_agent.get_agent(),
+            "LlmServierAgent": self.llm_servier_agent.get_agent(),
+            "PromptRouterAgent": self.prompt_router_agent.get_agent(),
+            "ProseAgent": self.prose_agent.get_agent(),
+        }
+        selected_agents = [agent_map[key] for key in output_keys if key in agent_map]
+        # Met à jour l'agent séquentiel avec uniquement les agents sélectionnés
+        self.agent = SequentialAgent(
+            name="root_agent",
+            sub_agents=selected_agents,
         )
 
 
